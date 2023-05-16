@@ -1,4 +1,4 @@
-# teamproject_team545
+# teamproject_team
 # project subject
 자신만의 축구팀 만들기!! 
 
