@@ -9,7 +9,7 @@ n
 # Describe the features to include in the project
 1. 선수 조회 
 2. 선수 추가 
-3. 특정 선수 team, name, league 조회
+3. 특정 선수 name조회
 4. 자기 팀 추가
 5. 자기 팀 포메이션 추가
 6. 자기팀 조회
