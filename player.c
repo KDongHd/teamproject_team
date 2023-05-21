@@ -220,8 +220,12 @@ void formation_player_add(player *s[], int count, team* t)
                 team_count++;
         }
 	printf("\n\n");
-}
+	int position; 
+	printf("선수를 넣으실 포지션을 선택해 주세요 ? ");
+	scanf("%d",&position);
+	s[count]->myteam_form[position-1] = 1;
 
+}
 
 
 
