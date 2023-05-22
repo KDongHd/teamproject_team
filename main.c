@@ -3,9 +3,6 @@
 #include <string.h>
 #include "player.h"
 
-
-
-
 int main(void){
     player *sp[100];
     team t;
@@ -15,6 +12,12 @@ int main(void){
     count = loadData(sp);
     index=count;
 
+    //팀 포메이션 초기화
+    t.myteam_attack = 3;
+    t.myteam_def = 4;
+    t.myteam_middle = 3;
+    t.myteam_goalkeep = 1;
+
     while (1){
         menu = selectMenu();
         if (menu == 0) break;
@@ -22,7 +25,7 @@ int main(void){
             if(count > 0)
             listplayer(sp, index);
             else
-            printf("데이터가없습니다.\n");
+            printf("No data.\n");
         }
 
         else if (menu == 2){
@@ -34,20 +37,20 @@ int main(void){
         else if(menu == 3){
             int no = selectDataNo(sp, index);
             if(no == 0){
-                printf("=> 취소됨!\n");
+                printf("=> Cancelled!\n");
             continue;
             }
-            updateplayer(sp[no-1]);}
-
+            updateplayer(sp[no-1]);
+        }
 
     else if (menu == 4) {
       int no = selectDataNo(sp, index);
       if (no == 0) {
-        printf("=> 취소됨!\n");
+        printf("=> Cancelled!\n");
         continue;
       }
       int deleteok;
-      printf("정말로 삭제하시겠습니까?(삭제 :1)");
+      printf("Are you sure you want to delete it?(Delete:1)");
       scanf("%d", &deleteok);
       if (deleteok == 1) {
         if (sp[no-1])
@@ -55,10 +58,9 @@ int main(void){
         sp[no-1] = NULL;
         count--;
 
-
-            printf("삭제됨\n");
+        printf("Deleted\n");
     } else
-            printf("취소됨\n");
+            printf("Cancelled\n");
     }
     else if(menu == 5){
       saveData(sp, index);
@@ -72,37 +74,43 @@ int main(void){
     {
         int no = selectDataNo(sp, count);
         if (no == 0) {
-        printf("=> 취소됨!\n");
+        printf("=> Cancelled!\n");
         continue;
         }
 
-        myteamadd(sp,no);
+        myteamadd(sp,no-1);
     }
 
- 
     else if(menu==8)
     {
         myteamformationadd(&t);
     }
     else if(menu==9)
     {
-	int no = selectDataNo(sp, count);
+	int no = selectMyDataNo(sp, count);
         if (no == 0) {
-        printf("=> 취소됨!\n");
+        printf("=> Cancelled!\n");
         continue;
         }
 	formation_player_add(sp, no, &t);
     }
+    
+    else if(menu == 10) {
+        showMyTeamFormation(sp, index, &t);
+    }
+
     else if(menu==11)
     {
         myteamshow(sp,index);
     }
-
+    
+    else if(menu == 12) {
+        changeMyTeamFormation(sp, index, &t);
+    }
 
 	}    
-    printf("종료됨!\n");
+    printf("Terminated!\n");
     return 0;
 
-}
-                  
 
+}

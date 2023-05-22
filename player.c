@@ -3,54 +3,67 @@
 #include <string.h>
 #include "player.h"
 
+char *strcasestr(const char *haystack, const char *needle)
+{
+    int size = strlen(needle);
+
+    while(*haystack) {
+        if(strncasecmp(haystack, needle, size) == 0) {
+            return (char *)haystack;
+        }
+        haystack++;
+    }
+
+    return NULL;
+}
 
 int selectMenu(){
     int menu;
-    printf("\n*** player ***\n");
-    printf("1. 선수조회\n");
-    printf("2. 선수추가\n");
-    printf("3. 선수수정\n");
-    printf("4. 선수삭제\n");
-    printf("5. 선수저장\n");
-    printf("6. 이름검색\n");
-    printf("7. 자기팀 선수 추가/삭제 \n");
-    printf("8. 자기팀 포메이션 추가\n");
-    printf("9. 자기팀 포메이션에 선수 추가\n");
-    printf("10. 자기팀 선수 포메이션으로 조회\n");
-    printf("11. 자기팀 선수  조회\n");
-    printf("12. 자기팀 포메이션 변경\n");
-    printf("0. 종료\n\n");
-    printf("=> 원하는 메뉴는? ");
+    printf("\n*** Player ***\n");
+    printf("1. View Player\n");
+    printf("2. Add Player\n");
+    printf("3. Update Player\n");
+    printf("4. Delete Player\n");
+    printf("5. Save Player\n");
+    printf("6. Search By Name\n");
+    printf("7. Add/Delete Your Team's Player\n");
+    printf("8. Add Formation to Your Team\n");
+    printf("9. Add Player to Your Team's Formation\n");
+    printf("10. View Your Team's Player By Formation\n");
+    printf("11. View Your Team's Player\n");
+    printf("12. Change Your Team's Formation\n");
+    printf("0. Exit\n\n");
+    printf("=> Select Menu? ");
     scanf("%d", &menu);
     return menu;
 }
 
-
-
-
 int addplayer(player *s){
-    printf("이름은?");
+    getchar();
+    printf("Name?");
     scanf("%s",s->name);
-    printf("goal number");
+    printf("Number of goals?");
     scanf("%u",&s->goal);
-    printf("assist number");
+    printf("Number of assists?");
     scanf("%u",&s->assist);
-    printf("뛰고 있는 리그");
+    printf("Current league?");
     scanf("%s",s->league);
-    printf("뛰고 있는 팀");
-    scanf(" %[^\n]s",s->team);
+    printf("Current team?");
+    scanf(" %s",s->team);
     s-> myteam = 0;//팀은  일단 0으로 초기화
-    printf("%s %u %u %s ",s->name,s->goal,s->assist,s->league);
+    printf("%s %u %u %s %s",s->name,s->goal,s->assist,s->league, s->team);
+    return 1;
 }
 
 
 void readplayer(player s){
-
-    printf("%s %u %u %s",s.name,s.goal,s.assist,s.league);
+    printf("%s %u %u %s %s",s.name,s.goal,s.assist,s.league, s.team);
 }
 
+
+
 void listplayer(player *s[], int count) {
-printf("\n이름 goal assist 리그 팀\n");
+printf("\nName Goal Assist League Team\n");
 for (int i = 0; i < count; i++) {
     if (s[i]==NULL)
         continue;
@@ -60,58 +73,65 @@ for (int i = 0; i < count; i++) {
   }
   printf("\n");
 }
-int updateplayer(player *s){
-      printf("새 이름은?");
-      scanf("%s",s->name);
-      printf("edit goal number");
-      scanf("%u",&s->goal);
-      printf("edit assist number");
-      scanf("%u",&s->assist);
-      printf("새로 뛰고 있는 리그");
-      scanf("%s",s->league);
-      printf("새로 뛰고 있는 팀");
-      scanf(" %[^\n]s",s->team);
-      return 1;
 
+int updateplayer(player *s){
+    printf("New name?");
+    scanf("%s",s->name);
+    printf("Edit number of goals");
+    scanf("%u",&s->goal);
+    printf("Edit number of assists");
+    scanf("%u",&s->assist);
+    printf("New league?");
+    scanf("%s",s->league);
+    printf("New team?");
+    scanf(" %s",s->team);
+    return 1;
 }
+
 int selectDataNo(player *s[], int count){
     int no;
     listplayer(s, count);
-    printf("번호는 (취소 :0)? ");
+    myteamshow(s,count);
+    printf("Number (Cancel :0)? ");
     scanf("%d", &no);
     return no;
-    }
+}
+
+int selectMyDataNo(player *s[], int count){
+    int no;
+    myteamshow(s,count);
+    printf("Number (Cancel :0)? ");
+    scanf("%d", &no);
+    return no;
+}
 
 void searchName(player *s[], int count){
     int scnt = 0;
     char search[20];
-    printf("검색할 메뉴는? ");
+    printf("Search Menu? ");
     scanf("%s", search);
     for(int i =0; i <count ; i++){
         if(s[i] == NULL) continue;
-        if(strstr(s[i]->name, search)){
-        printf("%2d ", i+1);
-        readplayer(*s[i]);
-        scnt++;
+        if(strcasestr(s[i]->name, search)){
+            printf("%2d ", i+1);
+            readplayer(*s[i]);
+            scnt++;
+        }
     }
-    }
-    if(scnt == 0) printf("=> 검색된 데이터 없음!");
-        printf("\n");
-    }
+    if(scnt == 0) printf("=> No data found!");
+    printf("\n");
+}
 
-void saveData(player *s[], int count)
-{
+void saveData(player *s[], int count){
     FILE *fp;
     fp = fopen("player.txt", "wt");
     for(int i = 0; i < count; i++){
         if(s[i] == NULL) continue;
-        fprintf(fp, "%s %u %u %s %s %u\n"
-        ,s[i]->name,s[i]->goal,s[i]->assist,s[i]->league,s[i]->team,s[i]->myteam);
+        fprintf(fp, "%s %u %u %s %s %d\n", s[i]->name, s[i]->goal, s[i]->assist, s[i]->league, s[i]->team, s[i]->myteam);
     }
     fclose(fp);
-    printf("=> 저장됨! ");
+    printf("=> Saved!");
 }
-
 
 int loadData(player *s[]){
     int count = 0, i = 0;
@@ -124,23 +144,23 @@ int loadData(player *s[]){
         fscanf(fp, "%u", &s[i]->goal);
         fscanf(fp, "%u", &s[i]->assist);
         fscanf(fp, "%s", s[i]->league);
-        fscanf(fp, " %[^\n]s", s[i]->team);
+        fscanf(fp, " %s", s[i]->team);
         fscanf(fp, "%u", &s[i]->myteam);
     }
     fclose(fp);
-    printf("=> 로딩 성공!\n");
+    printf("=> Loaded!");
     return i;
 }
 
 
 void myteamadd(player *s[],int count)
 {
-        int select;
-        printf("팀에 선수를 추가하시겠습니까?(추가하려면 : 1) 팀에 선수를 삭제하시겠브니까 ?(삭제하려면 : 0)");
-        scanf("%d", &select);
-        if (select == 1) {
-        s[count]->myteam = 1;
-        }
+    int select;
+    printf("Would you like to add a player to the team?(To add: 1) Would you like to remove a player from the team ?(To remove : 0)");
+    scanf("%d", &select);
+    if (select == 1) {
+    s[count]->myteam = 1;
+    }
 	else if(select == 0)
 	{
 		s[count]->myteam = 0;
@@ -150,23 +170,22 @@ void myteamadd(player *s[],int count)
 void myteamformationadd(team *t){
 	
 	int sum =0;
+	t->myteam_goalkeep = 1;  // Fixed number of goalkeepers
 
-	while(sum != 11 ){
-        printf("골키퍼의 숫자를 넣어주세요 (골키퍼는 항상 1명입니다. ), 또한 모든 선수들은 11명이여야합니다. ");
-	scanf("%d", &t->myteam_goalkeep);
-
-        printf("수비수 숫자를 넣어 주세요 ");
+	while(sum != 10 ){
+        printf("Please enter the number of defenders ");
         scanf("%d", &t->myteam_def);
-        printf("미드필더  숫자를 넣어 주세요 ");
+        printf("Please enter the number of midfielders ");
         scanf("%d", &(t->myteam_middle));
-        printf("공격수  숫자를 넣어 주세요 ");
-	scanf("%d", &(t->myteam_attack));
-	sum = t->myteam_def + t->myteam_goalkeep+ t->myteam_middle+ t->myteam_attack;
+        printf("Please enter the number of forwards ");
+	    scanf("%d", &(t->myteam_attack));
+	    sum = t->myteam_def + t->myteam_middle + t->myteam_attack;
 	}
 }
 
 void myteamshow(player *s[], int count) {
-printf("\n이름 goal assist 리그 팀 myteam\n");
+printf("\nMY TEAM\n");
+printf("Name goal assist League Team\n");
 for (int i = 0; i < count; i++) {
     if (s[i]->myteam == 0)
         continue;
@@ -179,19 +198,8 @@ for (int i = 0; i < count; i++) {
 
 void formation_player_add(player *s[], int count, team* t)
 {
-	printf("\n이름 goal assist 리그 팀 myteam\n");
-	for (int i = 0; i < count; i++) {
-    	if (s[i]->myteam == 0)
-        continue;
-
-   	printf("\n%d ", i + 1);
-    	readplayer(*s[i]);
-  	}
-  	printf("\n");
-	
-
-	printf("현재 팀에 추가된 선수들의 포메이션을 정해 주세요");
-	printf("현재 팀에 포메이션숫자는 골키퍼: %d 수비수: %d 미드필더: %d 공격수: %d ",t->myteam_goalkeep, t->myteam_def,t->myteam_middle,t->myteam_attack );
+	printf("Please set the formation for the players added to the current team");
+	printf("The current team's formation numbers are: Goalkeeper: %d Defender: %d Midfielder: %d Forward: %d ",t->myteam_goalkeep, t->myteam_def,t->myteam_middle,t->myteam_attack );
 	int team_count = 1;
        	printf("\n\n");	
 	for (int i =0; i < t->myteam_attack ; i++)
@@ -221,21 +229,120 @@ void formation_player_add(player *s[], int count, team* t)
         }
 	printf("\n\n");
 	int position; 
-	printf("선수를 넣으실 포지션을 선택해 주세요 ? ");
+	printf("Which position would you like to place the player in? ");
 	scanf("%d",&position);
-	s[count]->myteam_form[position-1] = 1;
+	s[count-1]->myteam_form[position-1] = 1;
+    
+    if (s[count-1]->myteam_form[position - 1] == 1) {
+        printf("The player has been successfully added to the formation.\n");
+    } else {
+        printf("The player has not been successfully added to the formation.\n");
+    }
+}
 
+
+void showMyTeamFormation(player *s[], int count, team *t) {
+    char *team_form[12];
+    for(int i = 0; i < 12; i++) {   // initialize team_form array
+        team_form[i] = "X";
+    }
+
+    for (int i = 0; i < count; i++) {
+        if (s[i]->myteam == 1) {
+            for (int j = 0; j < 12; j++) {
+                if (s[i]->myteam_form[j] == 1) {
+                    team_form[j] = s[i]->name;
+                }
+            }
+        }
+    }
+
+    // Print team formation
+    printf("\nTeam Formation:\n");
+    for (int i = 0; i < t->myteam_attack; i++) {
+        printf("%s       ", team_form[i]);
+    }
+    printf("\n\n");
+    for (int i = 0; i < t->myteam_middle; i++) {
+        printf("%s       ", team_form[i + t->myteam_attack]);
+    }
+    printf("\n\n");
+    for (int i = 0; i < t->myteam_def; i++) {
+        printf("%s       ", team_form[i + t->myteam_attack + t->myteam_middle]);
+    }
+    printf("\n\n");
+    for (int i = 0; i < t->myteam_goalkeep; i++) {
+        printf("           %s", team_form[i + t->myteam_attack + t->myteam_middle + t->myteam_def]);
+    }
+    printf("\n\n");
 }
 
 
 
+void changeMyTeamFormation(player *s[], int count, team *t) {
+    int sum = 0, old_def = t->myteam_def, old_middle = t->myteam_middle, old_attack = t->myteam_attack;
+    t->myteam_goalkeep = 1;  // Fixed number of goalkeepers
 
+    while(sum != 10 ){
+        printf("Please enter the number of defenders ");
+        scanf("%d", &t->myteam_def);
+        printf("Please enter the number of midfielders ");
+        scanf("%d", &(t->myteam_middle));
+        printf("Please enter the number of forwards ");
+        scanf("%d", &(t->myteam_attack));
+        sum = t->myteam_def + t->myteam_middle + t->myteam_attack;
+    }
 
+    if(old_def > t->myteam_def && countPlayersInPosition(s, count, 2) >= old_def) {
+        printf("Which defender would you like to change to a midfielder? ");
+        movePlayer(s, count, 2, 3); // Move defender to midfielder
+    }
+    
+    if(old_middle > t->myteam_middle && countPlayersInPosition(s, count, 3) >= old_middle) {
+        if(old_def < t->myteam_def) {
+            printf("Which midfielder would you like to change to a defender? ");
+            movePlayer(s, count, 3, 2); // Move midfielder to defender
+        } else if(old_attack < t->myteam_attack) {
+            printf("Which midfielder would you like to change to an attacker? ");
+            movePlayer(s, count, 3, 4); // Move midfielder to attacker
+        }
+    }
+    
+    if(old_attack > t->myteam_attack && countPlayersInPosition(s, count, 4) >= old_attack) {
+        printf("Which attacker would you like to change to a midfielder? ");
+        movePlayer(s, count, 4, 3); // Move attacker to midfielder
+    }
+}
 
+int countPlayersInPosition(player *s[], int count, int position) {
+    int playersInPosition = 0;
+    for(int i = 0; i < count; i++) {
+        if(s[i]->myteam_form[position-1] == 1) {
+            playersInPosition++;
+        }
+    }
+    return playersInPosition;
+}
 
+void movePlayer(player *s[], int count, int oldPos, int newPos) {
+    int playerNo;
+    scanf("%d", &playerNo);
 
+    if(playerNo > count || playerNo <= 0){
+        printf("Invalid player number. Please try again.\n");
+        return;
+    }
 
+    // Check if the player is in the correct old position
+    if(s[playerNo-1]->myteam_form[oldPos-1] != 1) {
+        printf("The player is not in the specified old position. Please try again.\n");
+        return;
+    }
 
+    // Update player position
+    for(int i = 0; i < 12; i++)
+        s[playerNo-1]->myteam_form[i] = 0;
+    s[playerNo-1]->myteam_form[newPos-1] = 1;
 
-
-
+    printf("Player position changed.\n");
+}
