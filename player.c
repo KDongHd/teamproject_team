@@ -242,16 +242,15 @@ void formation_player_add(player *s[], int count, team* t)
 
 
 void showMyTeamFormation(player *s[], int count, team *t) {
-    char *team_form[12];
     for(int i = 0; i < 12; i++) {   // initialize team_form array
-        team_form[i] = "X";
+        s[i]->team_form[i] = "X";
     }
 
     for (int i = 0; i < count; i++) {
         if (s[i]->myteam == 1) {
             for (int j = 0; j < 12; j++) {
                 if (s[i]->myteam_form[j] == 1) {
-                    team_form[j] = s[i]->name;
+                    s[i]->team_form[j] = s[i]->name;
                 }
             }
         }

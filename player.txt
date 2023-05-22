@@ -1,4 +1,4 @@
-son 5 5 epl tottenham 0
+nam 3 4 epl mct 0
 kane 10 10 epl tottenham 0
 Dele 6 8 epl tottenham 1
 Lloris 0 0 epl tottenham 1
